@@ -5,7 +5,7 @@ from flask import current_app
 from scipy import stats
 from statsmodels.stats.multitest import multipletests
 
-from fc_app.plots import plot_km
+from fc_app.plots import plot_na
 from redis_util import redis_get, redis_set
 
 
@@ -50,22 +50,22 @@ def read_input(input_dir: str):
 
 def calculate_global():
     """
-    Calculates the global KM of the data of all clients.
+    Calculates the global na of the data of all clients.
     :return: None
     """
-    current_app.logger.info('[API] Calculate Global KM')
+    current_app.logger.info('[API] Calculate Global NA')
     client_data = redis_get('global_data')
-    results, p_values = compute_global_km(client_data, redis_get('differential_privacy'))
+    results, p_values = compute_global_na(client_data, redis_get('differential_privacy'))
     current_app.logger.info(f'[API] Global Results calculated')
-    redis_set('global_km', [results, p_values])
+    redis_set('global_na', [results, p_values])
     current_app.logger.info(results)
     current_app.logger.info(p_values)
-    current_app.logger.info(redis_get('global_km'))
+    current_app.logger.info(redis_get('global_na'))
 
 
 def write_results(results, output_dir: str):
     """
-    Writes the results of global_km to the output_directory.
+    Writes the results of global_na to the output_directory.
     :param results: Global results calculated from the local counts of the clients
     :param output_dir: String of the output directory. Usually /mnt/output
     :return: None
@@ -88,7 +88,7 @@ def write_results(results, output_dir: str):
         current_app.logger.error("Error while writing survival function to file")
         current_app.logger.error(str(e))
     try:
-        surv_plot = plot_km(data=result)
+        surv_plot = plot_na(data=result)
         surv_plot.savefig(output_dir + '/' + redis_get('survival_plot_filename') + '.png', format='png')
     except Exception as e:
         current_app.logger.error("Error while creating plots")
@@ -152,7 +152,7 @@ def compute_d_and_n_matrix(data):
     return m
 
 
-def compute_global_km(client_data, privacy_level: str = 'none'):
+def compute_global_na(client_data, privacy_level: str = 'none'):
     time = {}
     data = {}
     results = {"KM": None, "NA": None}
@@ -216,9 +216,9 @@ def compute_global_km(client_data, privacy_level: str = 'none'):
     if redis_get('category_col') is not None:
         p_values = pairwise_logrank_test(aggregation_dfs).reset_index()
         current_app.logger.info(p_values.to_dict())
-        return results["KM"].to_dict(), p_values.to_dict()
+        return results["NA"].to_dict(), p_values.to_dict()
     else:
-        return results["KM"].to_dict(), None
+        return results["NA"].to_dict(), None
 
 
 def compute_dp_matrix(eps, d_n_matrix):

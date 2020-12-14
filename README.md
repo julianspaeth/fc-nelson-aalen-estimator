@@ -1,10 +1,10 @@
-# Federated Kaplan-Meier Estimator for the FeatureCloud Platform
+# Federated Nelson-Aalen Estimator for the FeatureCloud Platform
 
 This FeatureCloud app is based on the [FeatureCloud Flask Template](https://github.com/FeatureCloud/flask_template).
 
 ### Usage
 
-The app computes the survival function estimation of a csv file. The file should contain a time and event column. If a
+The app computes the cumulative hazard rate estimation of a csv file. The file should contain a time and event column. If a
 category column is included, multiple survival functions will be estimated and a pairwise logrank test will be
 performed.
 
@@ -19,5 +19,5 @@ An example config.yml is included in this repository.
 - This app has no frontend
 - In the requirements.txt are the project specific python requirements which will be installed in the docker image via
   Dockerfile
-- The build.sh automatically builds the Federated Kaplan-Meier Estimator App with the image name fc_kaplan_meier
+- The build.sh automatically builds the Federated Nelson-Aalen Estimator App with the image name registry.featurecloud.eu/fc-nelson-aalen
  

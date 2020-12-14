@@ -6,7 +6,7 @@ import rq
 import yaml
 from flask import Blueprint, jsonify, request, current_app
 
-from fc_app.kaplan_meier import calculate_global, calculate_local_counts, read_input, write_results
+from fc_app.nelson_aalen import calculate_global, calculate_local_counts, read_input, write_results
 from redis_util import redis_set, redis_get, get_step, set_step
 
 pool = redis.BlockingConnectionPool(host='localhost', port=6379, db=0, queue_class=q.Queue)
@@ -16,7 +16,7 @@ r = redis.Redis(connection_pool=pool)
 # Change it to True later to send data from the coordinator to the clients or vice versa.
 redis_set('available', False)
 
-# The various steps of the KM app. This list is not really used and only an overview.
+# The various steps of the na app. This list is not really used and only an overview.
 STEPS = ['start', 'setup', 'local_calculation', 'waiting', 'global_calculation', 'broadcast_results', 'write_results',
          'finalize', 'finished']
 
@@ -45,7 +45,7 @@ def status():
 
     if get_step() == 'start':
         current_app.logger.info('[STEP] start')
-        current_app.logger.info('[API] Federated Kaplan-Meier Estimator')
+        current_app.logger.info('[API] Federated Nelson-Aalen Estimator')
 
     elif get_step() == 'local_calculation':
         current_app.logger.info('[STEP] local_calculation')
@@ -85,17 +85,17 @@ def status():
         set_step("broadcast_results")
 
     elif get_step() == 'broadcast_results':
-        # as soon as the global km was calculated, the result is broadcasted to the clients
+        # as soon as the global na was calculated, the result is broadcasted to the clients
         current_app.logger.info('[STEP] broadcast_results')
-        global_km = redis_get('global_km')
-        current_app.logger.info(global_km)
+        global_na = redis_get('global_na')
+        current_app.logger.info(global_na)
         redis_set('available', True)
         set_step('write_results')
 
     elif get_step() == 'write_results':
-        # The global km is written to the output directory
+        # The global na is written to the output directory
         current_app.logger.info('[STEP] write_results')
-        write_results(redis_get('global_km'), OUTPUT_DIR)
+        write_results(redis_get('global_na'), OUTPUT_DIR)
         current_app.logger.info('[API] Finalize client')
         if redis_get('is_coordinator'):
             # The coordinator is already finished now
@@ -158,8 +158,8 @@ def data():
             # Get global result from coordinator (as client)
             current_app.logger.info('GET GLOBAL RESULT FROM COORDINATOR!')
             current_app.logger.info('[API] ' + str(request.get_json()))
-            redis_set('global_km', request.get_json(True)['global_km'])
-            current_app.logger.info('[API] ' + str(redis_get('global_km')))
+            redis_set('global_na', request.get_json(True)['global_na'])
+            current_app.logger.info('[API] ' + str(redis_get('global_na')))
             set_step('write_results')
             return jsonify(True)
 
@@ -168,7 +168,7 @@ def data():
         if not redis_get('is_coordinator'):
             # send data to coordinator (as client)
             if get_step() != 'finalize':
-                # Send local KM to the coordinator
+                # Send local na to the coordinator
                 current_app.logger.info('[API] send data to coordinator')
                 redis_set('available', False)
                 local_data = redis_get('local_data')
@@ -184,9 +184,9 @@ def data():
             # broadcast data to clients (as coordinator)
             current_app.logger.info('[API] broadcast data from coordinator to clients')
             redis_set('available', False)
-            global_km = redis_get('global_km')
-            current_app.logger.info(global_km)
-            return jsonify({'global_km': global_km})
+            global_na = redis_get('global_na')
+            current_app.logger.info(global_na)
+            return jsonify({'global_na': global_na})
 
     else:
         current_app.logger.info('[API] Wrong request type, only GET and POST allowed')
@@ -268,7 +268,7 @@ def have_clients_finished():
 
 def read_config():
     with open(INPUT_DIR + '/config.yml') as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)['fc_kaplan_meier']
+        config = yaml.load(f, Loader=yaml.FullLoader)['fc-nelson-aalen']
 
         redis_set('input_filename', config['files']['input'])
         redis_set('survival_function_filename', config['files']['output']['survival_function'])

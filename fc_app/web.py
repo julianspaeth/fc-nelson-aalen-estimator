@@ -40,7 +40,7 @@ def root():
         return 'Aggregate local results and compute global result...'
     elif step == 'broadcast_results':
         if not redis_get('coordinator'):
-            current_app.logger.info('[WEB] Receiving global mean from coordinator')
+            current_app.logger.info('[WEB] Receiving global na from coordinator')
             return 'Receiving global mean from coordinator...'
         else:
             current_app.logger.info('[WEB] Broadcasting global result to other clients')

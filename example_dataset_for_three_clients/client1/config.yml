@@ -1,9 +1,9 @@
-fc-nelson-aalen:
+fc_kaplan_meier:
   files: # file names
     input: lymphoma1.csv # name of the input CSV/TSV/sas7bdat file
     output: # name of the output files
-      survival_function: cumulative_hazard_rate # name of the CSV file containing the survival function data
-      survival_plot: hazard_plot # name of the PNG image showing the survival plot (Kaplan-Meier plot)
+      survival_function: survival_function # name of the CSV file containing the survival function data
+      survival_plot: survival_plot # name of the PNG image showing the survival plot (Kaplan-Meier plot)
       logrank_test: logrank_test # If a category column is given: name of CSV file containing the pairwise logrank-test results
 
   # parameters
@@ -11,9 +11,7 @@ fc-nelson-aalen:
     duration_col: Time # name of the column containing the time values
     event_col: Censor # name of the column containing the event values (1=event occurred, 0=censored)
     category_col: Stage_group # name of the column containing the categories that shall be analysed separately (e.g. treatment A vs. treatment B)
-
-    # coordinator only:
-    differential_privacy: none # amount of differential privacy added to the computation (none, low, middle or high). Only the coordinator's decision is applied.
+    differential_privacy: none # amount of differential privacy added to the computation (none, low, middle or high)
     multipletesting_method: bonferroni # Method used for testing and adjustment of pvalues in the pairwise logrank test
       #bonferroni : one-step correction
       #sidak : one-step correction
