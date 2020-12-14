@@ -15,7 +15,7 @@ def plot_na(data):
                          drawstyle="steps-post", label=na)
     plt.ylabel("Cumulative Hazard Rate")
     plt.xlabel("Timeline")
-    plt.xlim(0, np.max(data.reset_index()["timeline"]))
+    plt.xlim(0, np.max(data.reset_index()["index"]))
     plt.title("Cumulative Hazard Rate")
 
     return plt

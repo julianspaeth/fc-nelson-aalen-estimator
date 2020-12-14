@@ -268,11 +268,11 @@ def have_clients_finished():
 
 def read_config():
     with open(INPUT_DIR + '/config.yml') as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)['fc-nelson-aalen']
+        config = yaml.load(f, Loader=yaml.FullLoader)['fc_nelson_aalen']
 
         redis_set('input_filename', config['files']['input'])
-        redis_set('survival_function_filename', config['files']['output']['survival_function'])
-        redis_set('survival_plot_filename', config['files']['output']['survival_plot'])
+        redis_set('survival_function_filename', config['files']['output']['cum_hazard_function'])
+        redis_set('survival_plot_filename', config['files']['output']['hazard_plot'])
         redis_set('logrank_test_filename', config['files']['output']['logrank_test'])
 
         redis_set('duration_col', config['parameters']['duration_col'])

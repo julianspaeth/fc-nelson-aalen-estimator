@@ -19,5 +19,5 @@ An example config.yml is included in this repository.
 - This app has no frontend
 - In the requirements.txt are the project specific python requirements which will be installed in the docker image via
   Dockerfile
-- The build.sh automatically builds the Federated Nelson-Aalen Estimator App with the image name registry.featurecloud.eu/fc-nelson-aalen
+- The build.sh automatically builds the Federated Nelson-Aalen Estimator App with the image name registry.featurecloud.eu/fc_nelson_aalen
  
