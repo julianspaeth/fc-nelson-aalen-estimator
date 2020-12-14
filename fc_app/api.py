@@ -203,8 +203,8 @@ def setup():
     """
     set_step('setup')
     current_app.logger.info('[STEP] setup')
-    read_config()
     retrieve_setup_parameters()
+    read_config()
     input_data = read_input(INPUT_DIR)
     if input_data is None:
         current_app.logger.info('[API] no data was found.')
@@ -274,9 +274,10 @@ def read_config():
         redis_set('survival_function_filename', config['files']['output']['cum_hazard_function'])
         redis_set('survival_plot_filename', config['files']['output']['hazard_plot'])
         redis_set('logrank_test_filename', config['files']['output']['logrank_test'])
-
         redis_set('duration_col', config['parameters']['duration_col'])
         redis_set('event_col', config['parameters']['event_col'])
         redis_set('category_col', config['parameters']['category_col'])
-        redis_set('differential_privacy', config['parameters']['differential_privacy'])
-        redis_set('multipletesting_method', config['parameters']['multipletesting_method'])
+
+        if redis_get('is_coordinator'):
+            redis_set('differential_privacy', config['parameters']['differential_privacy'])
+            redis_set('multipletesting_method', config['parameters']['multipletesting_method'])
