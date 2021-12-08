@@ -1,23 +1,51 @@
-# Federated Nelson-Aalen Estimator for the FeatureCloud Platform
+# Nelson-Aalen FeatureCloud App
 
-This FeatureCloud app is based on the [FeatureCloud Flask Template](https://github.com/FeatureCloud/flask_template).
+## Description
+This app calculates the hazard rate for time-to-event data using the Nelson-Aalen estimator.
 
-### Usage
-
-The app computes the cumulative hazard rate estimation of a csv file. The file should contain a time and event column. If a
-category column is included, multiple survival functions will be estimated and a pairwise logrank test will be
-performed.
-
-To run the app, the input folder should contain a CSV/TSV/SASS file and a config.yml describing that file.
-An example config.yml is included in this repository. 
+## Input
+- `input`: containing the local training data (columns: features; rows: samples)
 
 
-### Technical Details
+## Output
+- `cum_hazard_function`: CSV file containing the survival function data
+- `hazard_plot`: PNG image showing the survival plot (Kaplan-Meier plot)
+- `logrank_test`: CSV file containing the pairwise logrank-test results
 
-- This app overwrites the api.py and web.py of
-  the [FeatureCloud Flask Template](https://github.com/FeatureCloud/flask_template).
-- This app has no frontend
-- In the requirements.txt are the project specific python requirements which will be installed in the docker image via
-  Dockerfile
-- The build.sh automatically builds the Federated Nelson-Aalen Estimator App with the image name registry.featurecloud.eu/fc_nelson_aalen
- 
+
+## Workflows
+This app is not compatible with other FeatureCloud apps.
+
+## Config
+Use the config file to customize your training. Just upload it together with your training data as `config.yml`
+```yml
+fc_nelson_aalen:
+  files: # file names
+    input: lymphoma1.csv # name of the input CSV/TSV/sas7bdat file
+    output: # name of the output files
+      survival_function: survival_function # name of the CSV file containing the survival function data
+      survival_plot: survival_plot # name of the PNG image showing the survival plot (Kaplan-Meier plot)
+      logrank_test: logrank_test # If a category column is given: name of CSV file containing the pairwise logrank-test results
+
+  # parameters
+  parameters:
+    duration_col: Time # name of the column containing the time values
+    event_col: Censor # name of the column containing the event values (1=event occurred, 0=censored)
+    category_col: Stage_group # name of the column containing the categories that shall be analysed separately (e.g. treatment A vs. treatment B)
+    differential_privacy: none # amount of differential privacy added to the computation (none, low, middle or high)
+    multipletesting_method: bonferroni # Method used for testing and adjustment of pvalues in the pairwise logrank test
+      #bonferroni : one-step correction
+      #sidak : one-step correction
+      #holm-sidak : step down method using Sidak adjustments
+      #holm : step-down method using Bonferroni adjustments
+      #simes-hochberg : step-up method (independent)
+      #hommel : closed method based on Simes tests (non-negative)
+      #fdr_bh : Benjamini/Hochberg (non-negative)
+      #fdr_by : Benjamini/Yekutieli (negative)
+      #fdr_tsbh : two stage fdr correction (non-negative)
+      #fdr_tsbky : two stage fdr correction (non-negative)
+```
+
+## Privacy
+- Event times and counts are exchanged
+- Differential privacy can be applied to make the resulting hazard rates private.
