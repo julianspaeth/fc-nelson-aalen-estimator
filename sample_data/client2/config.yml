@@ -1,9 +1,9 @@
-fc_kaplan_meier:
+fc_nelson_aalen:
   files: # file names
     input: lymphoma2.csv # name of the input CSV/TSV/sas7bdat file
     output: # name of the output files
-      survival_function: survival_function # name of the CSV file containing the survival function data
-      survival_plot: survival_plot # name of the PNG image showing the survival plot (Kaplan-Meier plot)
+      cum_hazard_function: "cum_hazard_function" # name of the CSV file containing the survival function data
+      hazard_plot: "hazard_plot" # name of the PNG image showing the survival plot (Kaplan-Meier plot)
       logrank_test: logrank_test # If a category column is given: name of CSV file containing the pairwise logrank-test results
 
   # parameters
